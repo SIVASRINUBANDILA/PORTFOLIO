@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - GUDI BHANU TEJA</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-logo" id="topbarLogo"></div>
+            <div class="topbar-badge">ADMIN</div>
+        </div>
+        <div class="topbar-right">
+            <div class="admin-name">Logged in as <span id="adminEmailDisplay">admin</span></div>
+            <button class="btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <div class="page-title">Admin <span>Dashboard</span></div>
+        <div class="page-subtitle">Manage your portfolio content and view contact messages.</div>
+
+        <div class="stats-row">
+            <div class="stat-card" onclick="switchTabByName('projects')">
+                <div class="stat-icon purple">🚀</div>
+                <div class="stat-info"><h3 id="projectCount">0</h3><p>Projects</p></div>
+            </div>
+            <div class="stat-card" onclick="switchTabByName('education')">
+                <div class="stat-icon blue">🎓</div>
+                <div class="stat-info"><h3 id="eduCount">0</h3><p>Education</p></div>
+            </div>
+            <div class="stat-card" onclick="switchTabByName('certificates')">
+                <div class="stat-icon orange">🏆</div>
+                <div class="stat-info"><h3 id="certCount">0</h3><p>Certificates</p></div>
+            </div>
+            <div class="stat-card" onclick="switchTabByName('experience')">
+                <div class="stat-icon green">💼</div>
+                <div class="stat-info"><h3 id="expCount">0</h3><p>Experience</p></div>
+            </div>
+            <div class="stat-card" onclick="switchTabByName('messages')">
+                <div class="stat-icon pink">📬</div>
+                <div class="stat-info"><h3 id="msgCount">0</h3><p>Messages</p></div>
+            </div>
+        </div>
+
+        <div class="section-tabs">
+            <button class="tab-btn active" id="tab-projects"     onclick="switchTab('projects',this)">🚀 Projects</button>
+            <button class="tab-btn"        id="tab-education"    onclick="switchTab('education',this)">🎓 Education</button>
+            <button class="tab-btn"        id="tab-experience"   onclick="switchTab('experience',this)">💼 Experience</button>
+            <button class="tab-btn"        id="tab-certificates" onclick="switchTab('certificates',this)">🏆 Certificates</button>
+            <button class="tab-btn"        id="tab-messages"     onclick="switchTab('messages',this)">
+                📬 Messages
+                <span class="unread-badge" id="unreadBadge" style="display:none">0</span>
+            </button>
+            <button class="tab-btn"        id="tab-profile"      onclick="switchTab('profile',this)">👤 Profile</button>
+        </div>
+
+        <div class="section-panel active" id="panel-projects">
+            <div class="section-header">
+                <h3>Projects</h3>
+                <button class="btn-add" onclick="addItem('projects')"><i class="fas fa-plus"></i> Add Project</button>
+            </div>
+            <div class="cards-grid" id="grid-projects"></div>
+        </div>
+
+        <div class="section-panel" id="panel-education">
+            <div class="section-header">
+                <h3>Education</h3>
+                <button class="btn-add" onclick="addItem('education')"><i class="fas fa-plus"></i> Add Education</button>
+            </div>
+            <div class="cards-grid" id="grid-education"></div>
+        </div>
+
+        <div class="section-panel" id="panel-experience">
+            <div class="section-header">
+                <h3>Experience</h3>
+                <button class="btn-add" onclick="addItem('experience')"><i class="fas fa-plus"></i> Add Experience</button>
+            </div>
+            <div class="cards-grid" id="grid-experience"></div>
+        </div>
+
+        <div class="section-panel" id="panel-certificates">
+            <div class="section-header">
+                <h3>Certificates</h3>
+                <button class="btn-add" onclick="addItem('certificates')"><i class="fas fa-plus"></i> Add Certificate</button>
+            </div>
+            <div class="cards-grid" id="grid-certificates"></div>
+        </div>
+
+        <div class="section-panel" id="panel-messages">
+            <div class="section-header">
+                <h3>📬 Messages Inbox</h3>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <button class="btn-mark-all" onclick="markAllRead()"><i class="fas fa-check-double"></i> Mark All Read</button>
+                    <button class="btn-clear-all" onclick="clearAllMessages()"><i class="fas fa-trash"></i> Clear All</button>
+                </div>
+            </div>
+            <div id="messages-list"></div>
+        </div>
+
+        <div class="section-panel" id="panel-profile">
+            <div class="section-header">
+                <h3>👤 Profile Settings</h3>
+                <button class="btn-add" onclick="saveProfile()"><i class="fas fa-save"></i> Save All Changes</button>
+            </div>
+            <div class="profile-grid">
+                <div class="profile-card">
+                    <div class="profile-preview">
+                        <div class="profile-avatar-wrap">
+                            <div class="profile-avatar" id="profileAvatarPreview"></div>
+                        </div>
+                        <div class="profile-preview-info">
+                            <h2 id="previewName"></h2>
+                            <p id="previewTitle">Full Stack Developer</p>
+                        </div>
+                    </div>
+                    <div class="profile-section-title">Basic Info</div>
+                    <div class="profile-field">
+                        <label>Full Name</label>
+                        <input type="text" id="pName" placeholder="Your Full Name"
+                            oninput="document.getElementById('previewName').textContent=this.value||'Your Name'; updateAvatarInitials()">
+                    </div>
+                    <div class="profile-field">
+                        <label>Job Title / Tagline</label>
+                        <input type="text" id="pTitle" placeholder="e.g. Full Stack Developer"
+                            oninput="document.getElementById('previewTitle').textContent=this.value||'Your Title'">
+                    </div>
+                    <div class="profile-field">
+                        <label>Location</label>
+                        <input type="text" id="pLocation" placeholder="e.g. Hyderabad, India">
+                    </div>
+                    <div class="profile-field">
+                        <label>Email (display)</label>
+                        <input type="email" id="pEmail" placeholder="e.g. example@gmail.com">
+                    </div>
+                    <div class="profile-field">
+                        <label>Phone</label>
+                        <input type="text" id="pPhone" placeholder="e.g. +91 9876543210">
+                    </div>
+                </div>
+
+                <div class="profile-card">
+                    <div class="profile-section-title">Photo & Bio</div>
+                    <div class="profile-field">
+                        <label>Profile Photo URL <span style="color:#555;font-weight:400">(paste any image link)</span></label>
+                        <input type="text" id="pPhoto" placeholder="https://example.com/photo.jpg" oninput="updateAvatarPhoto()">
+                    </div>
+                    <div class="profile-field">
+                        <label>— or — Upload Photo from Computer</label>
+                        <label for="pPhotoFile" style="display:inline-flex;align-items:center;gap:8px;background:#1e1d36;border:2px dashed #a259ff;color:#a259ff;padding:10px 20px;border-radius:10px;cursor:pointer;font-size:0.85rem;font-weight:600;transition:background 0.2s">
+                            <i class="fas fa-image"></i> Choose Image
+                        </label>
+                        <input type="file" id="pPhotoFile" accept="image/*" style="display:none" onchange="handlePhotoUpload(this)">
+                        <div id="pPhotoStatus" style="margin-top:8px;font-size:0.8rem;color:#888"></div>
+                        <small style="color:#666;margin-top:4px;display:block">Uploading an image will replace the URL above with the image data. Max 5MB.</small>
+                    </div>
+                    <div class="profile-field">
+                        <label>About / Bio</label>
+                        <textarea id="pBio" placeholder="Write a short bio about yourself..." rows="4"></textarea>
+                    </div>
+                    <div class="profile-field">
+                        <label>📄 Resume Link <span style='color:#555;font-weight:400'>(Google Drive / Dropbox / any direct PDF link)</span></label>
+                        <input type="text" id="pResume" placeholder="https://drive.google.com/file/d/...">
+                        <small style='color:#888;margin-top:6px;display:block;'>Tip: In Google Drive → right-click file → Get link → set Anyone with link → paste here</small>
+                    </div>
+                    <div class="profile-field">
+                        <label>Years of Experience</label>
+                        <input type="text" id="pExp" placeholder="e.g. 2+ years">
+                    </div>
+                </div>
+
+                <div class="profile-card full-width">
+                    <div class="profile-section-title">Social Links</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                        <div class="profile-field">
+                            <label>GitHub</label>
+                            <div class="social-row"><div class="social-icon">🐙</div>
+                            <input type="text" id="pGithub" placeholder="https://github.com/username"></div>
+                        </div>
+                        <div class="profile-field">
+                            <label>LinkedIn</label>
+                            <div class="social-row"><div class="social-icon">💼</div>
+                            <input type="text" id="pLinkedin" placeholder="https://linkedin.com/in/username"></div>
+                        </div>
+                        <div class="profile-field">
+                            <label>Twitter / X</label>
+                            <div class="social-row"><div class="social-icon">🐦</div>
+                            <input type="text" id="pTwitter" placeholder="https://twitter.com/username"></div>
+                        </div>
+                        <div class="profile-field">
+                            <label>Portfolio / Website</label>
+                            <div class="social-row"><div class="social-icon">🌐</div>
+                            <input type="text" id="pWebsite" placeholder="https://yourwebsite.com"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-card full-width">
+                    <div class="profile-section-title">Skills / Technologies</div>
+                    <div class="skills-tags" id="skillsTagsContainer"></div>
+                    <div class="add-skill-row">
+                        <input type="text" id="newSkillInput" placeholder="Add a skill (e.g. React, Python...)"
+                            onkeydown="if(event.key==='Enter'){addSkill();}">
+                        <button class="btn-add-skill" onclick="addSkill()"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                </div>
+
+                <div class="profile-card full-width" style="padding:20px 28px;">
+                    <button class="btn-save-profile" onclick="saveProfile()">
+                        <i class="fas fa-save"></i> Save All Profile Changes
+                    </button>
+                    <button class="btn-reset-profile" onclick="resetProfile()">
+                        <i class="fas fa-undo"></i> Reset to Last Saved
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <div class="modal-icon">🗑️</div>
+            <h3>Delete Item?</h3>
+            <p>This action cannot be undone. Are you sure?</p>
+            <div class="modal-actions">
+                <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+                <button class="modal-confirm" onclick="confirmDelete()">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ── API BASE URL ──────────────────────────────────────────────────────
+        const API = "https://portfolio-6z56.onrender.com";
+
+        // ── HELPER: safely extract MongoDB _id or plain id as string ─────────
+        // Handles: string "abc123", number 1, or object { $oid: "abc123" }
+        function gid(item) {
+            const raw = item._id || item.id;
+            if (!raw) return null;
+            if (typeof raw === 'object' && raw.$oid) return raw.$oid;
+            return String(raw);
+        }
+
+        // ── AUTH ──────────────────────────────────────────────────────────────
+        if (localStorage.getItem('isAdminLoggedIn') !== 'true') {
+            window.location.href = 'login.html';
+        }
+        document.getElementById('adminEmailDisplay').textContent =
+            localStorage.getItem('adminEmail') || 'admin';
+
+        function logout() {
+            localStorage.removeItem('isAdminLoggedIn');
+            localStorage.removeItem('adminEmail');
+            showToast('Logged out!', 'info');
+            setTimeout(() => window.location.href = 'login.html', 1000);
+        }
+
+        // ── DEFAULT DATA ──────────────────────────────────────────────────────
+        let data = {
+            projects: [],
+            education: [],
+            experience: [],
+            certificates: []
+        };
+
+        // ── DEFAULT PROFILE ───────────────────────────────────────────────────
+        const defaultProfile = {
+            name: '',
+            title: 'Full Stack Developer',
+            location: 'Andhra Pradesh, India',
+            email: '', phone: '', photo: '', bio: '',
+            resume: '', exp: '', github: '', linkedin: '',
+            twitter: '', website: '',
+            skills: ['React', 'Node.js', 'MongoDB', 'Python', 'Java', 'MySQL']
+        };
+        let profile = { ...defaultProfile, skills: [...defaultProfile.skills] };
+
+        // ── LOAD FROM API ─────────────────────────────────────────────────────
+        async function loadFromAPI() {
+            try {
+                const res = await fetch(`${API}/api/portfolio`);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const apiData = await res.json();
+                data.projects     = apiData.projects     || [];
+                data.education    = apiData.education    || [];
+                data.experience   = apiData.experience   || [];
+                data.certificates = apiData.certificates || [];
+                if (apiData.profile) {
+                    profile = { ...defaultProfile, skills: [...defaultProfile.skills], ...apiData.profile };
+                    if (!Array.isArray(profile.skills)) profile.skills = [...defaultProfile.skills];
+                }
+            } catch (e) {
+                console.warn('API unavailable, using defaults:', e.message);
+                const saved = localStorage.getItem('portfolioData');
+                if (saved) { try { data = JSON.parse(saved); } catch(_) {} }
+            }
+            renderAll();
+            loadProfileForm();
+        }
+
+        // Track changes for optimized saves
+        let trackChanges = { new: { projects: [], education: [], experience: [], certificates: [] }, updated: {}, deleted: {} };
+
+        // ── OPTIMIZED SAVE TO API (individual operations) ────────────────────
+        async function saveToStorage() {
+            try {
+                // This is called after in-memory data is updated
+                // No bulk save needed - individual saves are handled in saveEdit, addItem, confirmDelete
+                await updateStats();
+            } catch (e) {
+                console.warn('Save failed:', e.message);
+                localStorage.setItem('portfolioData', JSON.stringify(data));
+            }
+        }
+
+        // Save individual item (POST for new, PUT /:id for updates)
+        async function saveItem(section, item, isNew = false) {
+            try {
+                const itemId = gid(item);
+                const url = `${API}/api/${section}${!isNew ? '/' + itemId : ''}`;
+                const method = isNew ? 'POST' : 'PUT';
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(item)
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const saved = await res.json();
+                // Update local id if new item (MongoDB might have generated _id)
+                if (isNew && saved._id && !item._id) {
+                    item._id = saved._id;
+                }
+                return saved;
+            } catch (e) {
+                console.error(`Failed to save ${section}:`, e.message);
+                throw e;
+            }
+        }
+
+        // Delete individual item
+        async function deleteItem(section, itemId) {
+            try {
+                const url = `${API}/api/${section}/${itemId}`;
+                const res = await fetch(url, { method: 'DELETE' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return true;
+            } catch (e) {
+                console.error(`Failed to delete ${section}:`, e.message);
+                throw e;
+            }
+        }
+
+        // ── PROFILE FORM ──────────────────────────────────────────────────────
+        function loadProfileForm() {
+            const safe = (v) => v || '';
+            document.getElementById('pName').value     = safe(profile.name);
+            document.getElementById('pTitle').value    = safe(profile.title);
+            document.getElementById('pLocation').value = safe(profile.location);
+            document.getElementById('pEmail').value    = safe(profile.email);
+            document.getElementById('pPhone').value    = safe(profile.phone);
+            document.getElementById('pPhoto').value    = safe(profile.photo);
+            document.getElementById('pBio').value      = safe(profile.bio);
+            document.getElementById('pResume').value   = safe(profile.resume);
+            document.getElementById('pExp').value      = safe(profile.exp);
+            document.getElementById('pGithub').value   = safe(profile.github);
+            document.getElementById('pLinkedin').value = safe(profile.linkedin);
+            document.getElementById('pTwitter').value  = safe(profile.twitter);
+            document.getElementById('pWebsite').value  = safe(profile.website);
+            document.getElementById('previewName').textContent  = profile.name  || 'Your Name';
+            document.getElementById('previewTitle').textContent = profile.title || 'Your Title';
+            const initials = (profile.name).split(' ').slice(0, 3).map(w => w[0]).join('');
+            document.getElementById('topbarLogo').textContent = initials;
+            updateAvatarPhoto();
+            renderSkillsTags();
+        }
+
+        function updateAvatarPhoto() {
+            const url    = document.getElementById('pPhoto').value.trim();
+            const avatar = document.getElementById('profileAvatarPreview');
+            if (url) {
+                avatar.innerHTML = '<img src="' + url + '" onerror="this.parentElement.textContent=getInitials()" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';
+            } else {
+                avatar.textContent = getInitials();
+            }
+        }
+
+        function getInitials() {
+            const name = (document.getElementById('pName').value || profile.name);
+            return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+        }
+
+        function updateAvatarInitials() {
+            if (!document.getElementById('pPhoto').value.trim()) {
+                document.getElementById('profileAvatarPreview').textContent = getInitials();
+            }
+        }
+
+        function renderSkillsTags() {
+            const skills = Array.isArray(profile.skills) ? profile.skills : [];
+            document.getElementById('skillsTagsContainer').innerHTML = skills.map((s, i) =>
+                '<div class="skill-tag">' + s + '<span class="remove-skill" onclick="removeSkill(' + i + ')">✕</span></div>'
+            ).join('');
+        }
+
+        function addSkill() {
+            const input = document.getElementById('newSkillInput');
+            const val   = input.value.trim();
+            if (!val) return;
+            if (!Array.isArray(profile.skills)) profile.skills = [];
+            if (profile.skills.includes(val)) { showToast('Skill already added!', 'info'); return; }
+            profile.skills.push(val);
+            input.value = '';
+            renderSkillsTags();
+        }
+
+        function removeSkill(index) {
+            if (Array.isArray(profile.skills)) {
+                profile.skills.splice(index, 1);
+                renderSkillsTags();
+            }
+        }
+
+        async function saveProfile() {
+            profile.name     = document.getElementById('pName').value.trim()     || profile.name;
+            profile.title    = document.getElementById('pTitle').value.trim();
+            profile.location = document.getElementById('pLocation').value.trim();
+            profile.email    = document.getElementById('pEmail').value.trim();
+            profile.phone    = document.getElementById('pPhone').value.trim();
+            profile.photo    = document.getElementById('pPhoto').value.trim();
+            profile.bio      = document.getElementById('pBio').value.trim();
+            profile.resume   = document.getElementById('pResume').value.trim();
+            profile.exp      = document.getElementById('pExp').value.trim();
+            profile.github   = document.getElementById('pGithub').value.trim();
+            profile.linkedin = document.getElementById('pLinkedin').value.trim();
+            profile.twitter  = document.getElementById('pTwitter').value.trim();
+            profile.website  = document.getElementById('pWebsite').value.trim();
+
+            // Show loading state
+            const saveBtn = document.querySelector('[onclick="saveProfile()"]');
+            const originalText = saveBtn?.innerHTML;
+            if (saveBtn) {
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving Profile...';
+                saveBtn.disabled = true;
+            }
+
+            try {
+                const res = await fetch(`${API}/api/profile`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(profile)
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                
+                loadProfileForm();
+                showToast('✅ Profile saved successfully!', 'success');
+                await updateStats();
+            } catch (e) {
+                console.warn('Profile API save failed:', e.message);
+                showToast('❌ Profile save failed: ' + e.message, 'error');
+                localStorage.setItem('profileData', JSON.stringify(profile));
+            } finally {
+                if (saveBtn) {
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.disabled = false;
+                }
+            }
+        }
+
+        async function resetProfile() {
+            try {
+                const r = await fetch(`${API}/api/profile`);
+                if (r.ok) {
+                    const p = await r.json();
+                    profile = { ...defaultProfile, skills: [...defaultProfile.skills], ...p };
+                    if (!Array.isArray(profile.skills)) profile.skills = [...defaultProfile.skills];
+                }
+            } catch (e) {}
+            loadProfileForm();
+            showToast('Reset to last saved profile.', 'info');
+        }
+
+        // ── STATS ─────────────────────────────────────────────────────────────
+        async function updateStats() {
+            let msgs = [];
+            try {
+                const r = await fetch(`${API}/api/messages`);
+                if (r.ok) msgs = await r.json();
+            } catch (e) {
+                msgs = JSON.parse(localStorage.getItem('contactMessages') || '[]');
+            }
+            const unread = msgs.filter(m => !m.read).length;
+            document.getElementById('projectCount').textContent = data.projects.length;
+            document.getElementById('eduCount').textContent     = data.education.length;
+            document.getElementById('certCount').textContent    = data.certificates.length;
+            document.getElementById('expCount').textContent     = data.experience.length;
+            document.getElementById('msgCount').textContent     = msgs.length;
+            const badge = document.getElementById('unreadBadge');
+            if (unread > 0) { badge.style.display = 'flex'; badge.textContent = unread; }
+            else { badge.style.display = 'none'; }
+        }
+
+        // ── TABS ──────────────────────────────────────────────────────────────
+        function switchTab(name, btn) {
+            document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('panel-' + name).classList.add('active');
+            btn.classList.add('active');
+            if (name === 'messages') renderMessages();
+            if (name === 'profile')  loadProfileForm();
+        }
+        function switchTabByName(name) {
+            const btn = document.getElementById('tab-' + name);
+            if (btn) switchTab(name, btn);
+        }
+
+        // ── RENDER ALL ────────────────────────────────────────────────────────
+        function renderAll() {
+            renderProjects();
+            renderEducation();
+            renderExperience();
+            renderCertificates();
+            updateStats();
+        }
+
+        // ── RENDER PROJECTS ───────────────────────────────────────────────────
+        function renderProjects() {
+            document.getElementById('grid-projects').innerHTML = data.projects.map(p => {
+                const pid = gid(p);
+                return `
+                <div class="item-card" id="card-proj-${pid}">
+                    <div class="edit-view">
+                        <div class="item-card-header"><span class="item-badge badge-purple">Project</span></div>
+                        <div class="item-title">${p.title}</div>
+                        <div class="item-meta"><i class="fas fa-code" style="color:#a259ff;margin-right:6px"></i>${p.tech}</div>
+                        <div class="item-desc">${p.desc}</div>
+                    </div>
+                    <div class="edit-form">
+                        <input id="proj-title-${pid}"  placeholder="Project Title">
+                        <input id="proj-tech-${pid}"    placeholder="Technologies">
+                        <textarea id="proj-desc-${pid}" placeholder="Description"></textarea>
+                        <input id="proj-link-${pid}"     placeholder="Link">
+                    </div>
+                    <div class="action-row">
+                        <button class="btn-edit"   id="editBtn-proj-${pid}"   onclick="startEdit('proj','${pid}')"><i class="fas fa-pen"></i> Edit</button>
+                        <button class="btn-save"   id="saveBtn-proj-${pid}"   onclick="saveEdit('proj','${pid}')"   style="display:none"><i class="fas fa-save"></i> Save</button>
+                        <button class="btn-cancel" id="cancelBtn-proj-${pid}" onclick="cancelEdit('proj','${pid}')" style="display:none"><i class="fas fa-times"></i></button>
+                        <button class="btn-delete" onclick="showDeleteModal('projects','${pid}')"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── RENDER EDUCATION ──────────────────────────────────────────────────
+        function renderEducation() {
+            document.getElementById('grid-education').innerHTML = data.education.map(e => {
+                const eid = gid(e);
+                return `
+                <div class="item-card" id="card-edu-${eid}">
+                    <div class="edit-view">
+                        <div class="item-card-header"><span class="item-badge badge-blue">Education</span></div>
+                        <div class="item-title">${e.title}</div>
+                        <div class="item-meta"><i class="fas fa-university" style="color:#5b9aff;margin-right:6px"></i>${e.place}</div>
+                        <div class="item-desc">${e.year} | ${e.grade}</div>
+                    </div>
+                    <div class="edit-form">
+                        <input id="edu-title-${eid}" placeholder="Degree">
+                        <input id="edu-place-${eid}" placeholder="Institution">
+                        <input id="edu-year-${eid}"  placeholder="Year">
+                        <input id="edu-grade-${eid}" placeholder="Grade">
+                    </div>
+                    <div class="action-row">
+                        <button class="btn-edit"   id="editBtn-edu-${eid}"   onclick="startEdit('edu','${eid}')"><i class="fas fa-pen"></i> Edit</button>
+                        <button class="btn-save"   id="saveBtn-edu-${eid}"   onclick="saveEdit('edu','${eid}')"   style="display:none"><i class="fas fa-save"></i> Save</button>
+                        <button class="btn-cancel" id="cancelBtn-edu-${eid}" onclick="cancelEdit('edu','${eid}')" style="display:none"><i class="fas fa-times"></i></button>
+                        <button class="btn-delete" onclick="showDeleteModal('education','${eid}')"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── RENDER EXPERIENCE ─────────────────────────────────────────────────
+        function renderExperience() {
+            document.getElementById('grid-experience').innerHTML = data.experience.map(x => {
+                const xid = gid(x);
+                return `
+                <div class="item-card" id="card-exp-${xid}">
+                    <div class="edit-view">
+                        <div class="item-card-header"><span class="item-badge badge-orange">Experience</span></div>
+                        <div class="item-title">${x.title}</div>
+                        <div class="item-meta"><i class="fas fa-building" style="color:#ffb347;margin-right:6px"></i>${x.company} | ${x.duration}</div>
+                        <div class="item-desc" placeholder="Description"></div>
+                    </div>
+                    <div class="edit-form">
+                        <input id="exp-title-${xid}"     placeholder="Job Title">
+                        <input id="exp-company-${xid}"   placeholder="Company">
+                        <input id="exp-duration-${xid}"  placeholder="Duration">
+                        <textarea id="exp-desc-${xid}" placeholder="Description"></textarea>
+                    </div>
+                    <div class="action-row">
+                        <button class="btn-edit"   id="editBtn-exp-${xid}"   onclick="startEdit('exp','${xid}')"><i class="fas fa-pen"></i> Edit</button>
+                        <button class="btn-save"   id="saveBtn-exp-${xid}"   onclick="saveEdit('exp','${xid}')"   style="display:none"><i class="fas fa-save"></i> Save</button>
+                        <button class="btn-cancel" id="cancelBtn-exp-${xid}" onclick="cancelEdit('exp','${xid}')" style="display:none"><i class="fas fa-times"></i></button>
+                        <button class="btn-delete" onclick="showDeleteModal('experience','${xid}')"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── RENDER CERTIFICATES ───────────────────────────────────────────────
+        function renderCertificates() {
+            document.getElementById('grid-certificates').innerHTML = data.certificates.map(c => {
+                const cid = gid(c);
+                return `
+                <div class="item-card" id="card-cert-${cid}">
+                    <div class="edit-view">
+                        <div class="item-card-header"><span class="item-badge badge-purple">${c.category}</span></div>
+                        <div class="item-title">${c.icon} ${c.title}</div>
+                        ${c.pdfUrl ? `<div class="item-meta" style="margin-top:6px"><i class="fas fa-file-pdf" style="color:#ff6b6b;margin-right:6px"></i><a href="${c.pdfUrl}" target="_blank" style="color:#a259ff;font-size:0.85rem">View Certificate PDF</a></div>` : '<div class="item-meta" style="color:#888;font-size:0.8rem;margin-top:6px"><i class="fas fa-file-pdf" style="margin-right:4px"></i>No PDF linked</div>'}
+                    </div>
+                    <div class="edit-form">
+                        <input id="cert-title-${cid}"    placeholder="Certificate Name">
+                        <input id="cert-category-${cid}" placeholder="Category (e.g. Web Dev, AI, Cloud)">
+                        <input id="cert-icon-${cid}"     placeholder="Emoji (e.g. 🏆)">
+                        <div style="margin-top:4px">
+                          <label style="display:block;font-size:0.8rem;color:#aaa;margin-bottom:6px">📄 Upload Certificate PDF</label>
+                          <label class="pdf-upload-btn" for="cert-file-${cid}" style="display:inline-flex;align-items:center;gap:8px;background:#1e1d36;border:2px dashed #a259ff;color:#a259ff;padding:10px 20px;border-radius:10px;cursor:pointer;font-size:0.85rem;font-weight:600;transition:background 0.2s">
+                            <i class="fas fa-upload"></i> Choose PDF file
+                          </label>
+                          <input type="file" id="cert-file-${cid}" accept="application/pdf" style="display:none" onchange="handlePdfUpload('${cid}', this)">
+                          <div id="cert-pdf-status-${cid}" style="margin-top:8px;font-size:0.8rem;color:#888"></div>
+                        </div>
+                    </div>
+                    <div class="action-row">
+                        <button class="btn-edit"   id="editBtn-cert-${cid}"   onclick="startEdit('cert','${cid}')"><i class="fas fa-pen"></i> Edit</button>
+                        <button class="btn-save"   id="saveBtn-cert-${cid}"   onclick="saveEdit('cert','${cid}')"   style="display:none"><i class="fas fa-save"></i> Save</button>
+                        <button class="btn-cancel" id="cancelBtn-cert-${cid}" onclick="cancelEdit('cert','${cid}')" style="display:none"><i class="fas fa-times"></i></button>
+                        <button class="btn-delete" onclick="showDeleteModal('certificates','${cid}')"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── MESSAGES ──────────────────────────────────────────────────────────
+        async function renderMessages() {
+            let msgs = [];
+            try {
+                const r = await fetch(`${API}/api/messages`);
+                if (r.ok) msgs = await r.json();
+                else throw new Error('HTTP ' + r.status);
+            } catch (e) {
+                console.warn('Messages API failed:', e.message);
+                msgs = JSON.parse(localStorage.getItem('contactMessages') || '[]');
+            }
+
+            const container = document.getElementById('messages-list');
+            if (msgs.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="emoji">📭</div><h3>No messages yet</h3><p>When visitors fill your contact form, their messages will appear here.</p></div>';
+                updateStats();
+                return;
+            }
+
+            container.innerHTML = '<div class="messages-list">' + msgs.map(m => {
+                const mid = gid(m);
+                return `
+                <div class="msg-card ${m.read ? '' : 'unread'}" id="msgcard-${mid}">
+                    <div class="msg-header">
+                        <div class="msg-avatar">${(m.name || '?').charAt(0).toUpperCase()}</div>
+                        <div class="msg-info">
+                            <div class="msg-name">${m.name}</div>
+                            <div class="msg-email"><i class="fas fa-envelope" style="font-size:0.7rem"></i> <a href="mailto:${m.email}">${m.email}</a></div>
+                            <div class="msg-time"><i class="fas fa-clock" style="font-size:0.7rem;margin-right:4px"></i>${m.time || ''}</div>
+                        </div>
+                    </div>
+                    <div class="msg-subject"><i class="fas fa-tag"></i> ${m.subject || 'No Subject'}</div>
+                    <div class="msg-body">${m.message}</div>
+                    <div class="msg-actions">
+                        ${!m.read
+                            ? `<button class="btn-read" onclick="markRead('${mid}')"><i class="fas fa-check"></i> Mark Read</button>`
+                            : `<button class="btn-read" style="opacity:0.35;cursor:default"><i class="fas fa-check-double"></i> Read</button>`
+                        }
+                        <a href="mailto:${m.email}?subject=Re: ${encodeURIComponent(m.subject || '')}" style="flex:1;text-decoration:none">
+                            <button class="btn-reply" style="width:100%"><i class="fas fa-reply"></i> Reply</button>
+                        </a>
+                        <button class="btn-delete" onclick="deleteMessage('${mid}')"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>`;
+            }).join('') + '</div>';
+
+            updateStats();
+        }
+
+        // ── MESSAGE ACTIONS ───────────────────────────────────────────────────
+        async function markRead(id) {
+            if (!id || id === 'null' || id === 'undefined') return;
+            try {
+                const res = await fetch(`${API}/api/messages/${id}/read`, { method: 'PUT' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+            } catch (e) { console.warn('markRead failed:', e.message); }
+            await renderMessages();
+            showToast('Marked as read', 'success');
+        }
+
+        async function markAllRead() {
+            try {
+                const res = await fetch(`${API}/api/messages/read-all`, { method: 'PUT' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+            } catch (e) { console.warn('markAllRead failed:', e.message); }
+            await renderMessages();
+            showToast('All marked as read', 'success');
+        }
+
+        async function deleteMessage(id) {
+            if (!id || id === 'null' || id === 'undefined') {
+                console.error('deleteMessage called with invalid id:', id);
+                return;
+            }
+            try {
+                const res = await fetch(`${API}/api/messages/${id}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+            } catch (e) { console.warn('deleteMessage failed:', e.message); }
+            await renderMessages();
+            showToast('Message deleted', 'error');
+        }
+
+        async function clearAllMessages() {
+    if (!confirm('Delete ALL messages? This cannot be undone.')) return;
+    try {
+        const res = await fetch(`${API}/api/messages/all`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+    } catch (e) {
+        console.warn('clearAll failed:', e.message);
+        localStorage.setItem('contactMessages', '[]');
+    }
+    await renderMessages();
+    showToast('All messages cleared', 'error');
+}
+
+        function startEdit(type, id) {
+            document.getElementById('card-' + type + '-' + id).classList.add('editing');
+            document.getElementById('editBtn-'   + type + '-' + id).style.display = 'none';
+            document.getElementById('saveBtn-'   + type + '-' + id).style.display = 'flex';
+            document.getElementById('cancelBtn-' + type + '-' + id).style.display = 'flex';
+            // Pre-fill fields with current values
+            if (type === 'proj') {
+                const i = data.projects.find(p => String(gid(p)) === String(id)); if (!i) return;
+                document.getElementById('proj-title-'+id).value = i.title||'';
+                document.getElementById('proj-tech-'+id).value  = i.tech||'';
+                document.getElementById('proj-desc-'+id).value  = i.desc||'';
+                document.getElementById('proj-link-'+id).value  = i.link||'';
+            } else if (type === 'edu') {
+                const i = data.education.find(e => String(gid(e)) === String(id)); if (!i) return;
+                document.getElementById('edu-title-'+id).value = i.title||'';
+                document.getElementById('edu-place-'+id).value = i.place||'';
+                document.getElementById('edu-year-'+id).value  = i.year||'';
+                document.getElementById('edu-grade-'+id).value = i.grade||'';
+            } else if (type === 'exp') {
+                const i = data.experience.find(x => String(gid(x)) === String(id)); if (!i) return;
+                document.getElementById('exp-title-'+id).value    = i.title||'';
+                document.getElementById('exp-company-'+id).value  = i.company||'';
+                document.getElementById('exp-duration-'+id).value = i.duration||'';
+                document.getElementById('exp-desc-'+id).value     = i.desc||'';
+            } else if (type === 'cert') {
+                const i = data.certificates.find(c => String(gid(c)) === String(id)); if (!i) return;
+                document.getElementById('cert-title-'+id).value    = i.title||'';
+                document.getElementById('cert-category-'+id).value = i.category||'';
+                document.getElementById('cert-icon-'+id).value     = i.icon||'';
+                const statusEl = document.getElementById('cert-pdf-status-'+id);
+                if (statusEl) statusEl.innerHTML = i.pdfUrl
+                    ? '<span style="color:#4caf50"><i class="fas fa-check-circle"></i> PDF uploaded — upload a new one to replace</span>'
+                    : '<span style="color:#888">No PDF uploaded yet</span>';
+            }
+        }
+
+        function cancelEdit(type, id) {
+            document.getElementById('card-' + type + '-' + id).classList.remove('editing');
+            document.getElementById('editBtn-'   + type + '-' + id).style.display = 'flex';
+            document.getElementById('saveBtn-'   + type + '-' + id).style.display = 'none';
+            document.getElementById('cancelBtn-' + type + '-' + id).style.display = 'none';
+            renderAll();
+        }
+
+        async function saveEdit(type, id) {
+            let item = null;
+            let section = null;
+
+            // Get the item and prepare updates
+            if (type === 'proj') {
+                section = 'projects';
+                item = data.projects.find(p => String(gid(p)) === String(id));
+                if (!item) return;
+                item.title = document.getElementById('proj-title-' + id).value;
+                item.tech  = document.getElementById('proj-tech-'  + id).value;
+                item.desc  = document.getElementById('proj-desc-'  + id).value;
+                item.link  = document.getElementById('proj-link-'  + id).value;
+            } else if (type === 'edu') {
+                section = 'education';
+                item = data.education.find(e => String(gid(e)) === String(id));
+                if (!item) return;
+                item.title = document.getElementById('edu-title-' + id).value;
+                item.place = document.getElementById('edu-place-' + id).value;
+                item.year  = document.getElementById('edu-year-'  + id).value;
+                item.grade = document.getElementById('edu-grade-' + id).value;
+            } else if (type === 'exp') {
+                section = 'experience';
+                item = data.experience.find(x => String(gid(x)) === String(id));
+                if (!item) return;
+                item.title    = document.getElementById('exp-title-'    + id).value;
+                item.company  = document.getElementById('exp-company-'  + id).value;
+                item.duration = document.getElementById('exp-duration-' + id).value;
+                item.desc     = document.getElementById('exp-desc-'     + id).value;
+            } else if (type === 'cert') {
+                section = 'certificates';
+                item = data.certificates.find(c => String(gid(c)) === String(id));
+                if (!item) return;
+                item.title    = document.getElementById('cert-title-'    + id).value;
+                item.category = document.getElementById('cert-category-' + id).value;
+                item.icon     = document.getElementById('cert-icon-'     + id).value;
+            }
+
+            if (!item || !section) return;
+
+            // Show loading state
+            const saveBtn = document.getElementById('saveBtn-' + type + '-' + id);
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            saveBtn.disabled = true;
+
+            try {
+                await saveItem(section, item, false);
+                showToast('✅ Saved successfully!', 'success');
+                document.getElementById('card-' + type + '-' + id).classList.remove('editing');
+                document.getElementById('editBtn-' + type + '-' + id).style.display = 'flex';
+                document.getElementById('saveBtn-' + type + '-' + id).style.display = 'none';
+                document.getElementById('cancelBtn-' + type + '-' + id).style.display = 'none';
+                renderAll();
+                await updateStats();
+            } catch (e) {
+                showToast('❌ Save failed: ' + e.message, 'error');
+            } finally {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }
+        }
+
+        // ── DELETE MODAL ──────────────────────────────────────────────────────
+        let pendingDelete = null;
+
+        function showDeleteModal(section, id) {
+            pendingDelete = { section, id };
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+            pendingDelete = null;
+        }
+
+        async function confirmDelete() {
+            if (!pendingDelete) return;
+
+            const { section, id } = pendingDelete;
+            const item = data[section].find(i => String(gid(i)) === String(id));
+            if (!item) {
+                closeModal();
+                return;
+            }
+
+            // Show loading state
+            const deleteBtn = document.getElementById('deleteModal').querySelector('[onclick="confirmDelete()"]');
+            const originalText = deleteBtn?.innerHTML;
+            if (deleteBtn) {
+                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+                deleteBtn.disabled = true;
+            }
+
+            try {
+                // Delete from API first
+                await deleteItem(section, id);
+                
+                // Remove from in-memory data
+                data[section] = data[section].filter(
+                    i => String(gid(i)) !== String(id)
+                );
+                
+                showToast('✅ Item deleted successfully!', 'success');
+                renderAll();
+                await updateStats();
+            } catch (e) {
+                showToast('❌ Failed to delete: ' + e.message, 'error');
+            } finally {
+                if (deleteBtn) {
+                    deleteBtn.innerHTML = originalText;
+                    deleteBtn.disabled = false;
+                }
+                closeModal();
+            }
+        }
+
+        // ── ADD ITEM ──────────────────────────────────────────────────────────
+        async function addItem(section) {
+            const id = Date.now();
+            let newItem = null;
+
+            if (section === 'projects')     newItem = { id, title: 'New Project', tech: 'Technologies', desc: 'Description.', link: '#' };
+            if (section === 'education')    newItem = { id, title: 'New Degree', place: 'Institution', year: 'Year', grade: 'Grade' };
+            if (section === 'experience')   newItem = { id, title: 'Job Title', company: 'Company', duration: 'Duration', desc: 'Description.' };
+            if (section === 'certificates') newItem = { id, title: 'New Certificate', category: 'Category', icon: '📜', pdfUrl: '' };
+
+            if (!newItem) return;
+
+            // Prepare section name for API
+            const sectionKey = section; // 'projects', 'education', etc.
+            
+            // Add to in-memory data first
+            data[sectionKey].push(newItem);
+
+            // Show loading state
+            const addBtn = document.querySelector(`[onclick="addItem('${section}')"]`);
+            const originalText = addBtn.innerHTML;
+            addBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+            addBtn.disabled = true;
+
+            try {
+                // Save to API
+                const saved = await saveItem(sectionKey, newItem, true);
+                // Update local item with MongoDB _id if created
+                newItem._id = saved._id;
+                showToast('✅ Item added! Click Edit to update.', 'success');
+                renderAll();
+                await updateStats();
+            } catch (e) {
+                // Remove from in-memory on failure
+                data[sectionKey] = data[sectionKey].filter(item => gid(item) !== id);
+                showToast('❌ Failed to add item: ' + e.message, 'error');
+                renderAll();
+            } finally {
+                addBtn.innerHTML = originalText;
+                addBtn.disabled = false;
+            }
+        }
+
+        // ── PHOTO UPLOAD ──────────────────────────────────────────────────────
+        function handlePhotoUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select an image file.', 'error');
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image too large — max 5MB.', 'error');
+                return;
+            }
+            const statusEl = document.getElementById('pPhotoStatus');
+            statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reading image...';
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64 = e.target.result;
+                // Put base64 into the URL field so saveProfile() picks it up normally
+                document.getElementById('pPhoto').value = base64;
+                updateAvatarPhoto();
+                statusEl.innerHTML = '<span style="color:#4caf50"><i class="fas fa-check-circle"></i> Image ready — click Save All Changes</span>';
+            };
+            reader.onerror = function() {
+                statusEl.innerHTML = '<span style="color:#ff6b6b">Failed to read image. Try again.</span>';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ── PDF UPLOAD ────────────────────────────────────────────────────────
+        function handlePdfUpload(id, input) {
+            const file = input.files[0];
+            if (!file) return;
+            if (file.type !== 'application/pdf') {
+                showToast('Please select a PDF file only.', 'error');
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('PDF too large — max 5MB. Try compressing it first.', 'error');
+                return;
+            }
+            const statusEl = document.getElementById('cert-pdf-status-' + id);
+            statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reading PDF...';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64 = e.target.result; // data:application/pdf;base64,...
+                // Store in the in-memory data object immediately
+                const cert = data.certificates.find(c => String(gid(c)) === String(id));
+                if (cert) {
+                    cert.pdfUrl = base64;
+                    statusEl.innerHTML = '<span style="color:#4caf50"><i class="fas fa-check-circle"></i> PDF ready — click Save to store it</span>';
+                } else {
+                    statusEl.innerHTML = '<span style="color:#ff6b6b">Error: certificate not found</span>';
+                }
+            };
+            reader.onerror = function() {
+                statusEl.innerHTML = '<span style="color:#ff6b6b">Failed to read file. Try again.</span>';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ── TOAST ─────────────────────────────────────────────────────────────
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + type + ' show';
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // ── INIT ──────────────────────────────────────────────────────────────
+        loadFromAPI();
+
+    </script>
+</body>
+</html>

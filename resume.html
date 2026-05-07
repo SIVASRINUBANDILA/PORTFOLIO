@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificates</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* ── NAVBAR FIX ── */
+        header {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            background: #23223a !important;
+            z-index: 9999 !important;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        main {
+            padding-top: 88px !important;
+        }
+
+        .logo {
+            visibility: hidden;
+        }
+
+        .logo.ready {
+            visibility: visible;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #23223a;
+            font-family: 'Montserrat', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .cert-page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 56px 24px 80px;
+        }
+
+        /* ── HEADER ── */
+        .cert-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .cert-header h2 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .cert-header h2 span {
+            background: linear-gradient(90deg, #ffb347, #a259ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cert-header p {
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 0.95rem;
+            font-weight: 400;
+        }
+
+        /* ── 2-column GRID ── */
+        .cert-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+
+        /* ── CARD — uniform gradient, same for all ── */
+        .certificate-card {
+            background: linear-gradient(135deg, #ffb347 0%, #a259ff 100%);
+            border-radius: 22px;
+            padding: 2.2rem 1.8rem 1.8rem;
+            box-shadow: 0 8px 40px rgba(162, 89, 255, 0.22);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            /* start hidden for JS stagger */
+            opacity: 0;
+            transform: translateY(40px) scale(0.97);
+            transition:
+                opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.3s;
+        }
+
+        .certificate-card.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .certificate-card:hover {
+            transform: translateY(-12px) scale(1.03);
+            box-shadow: 0 24px 64px rgba(162, 89, 255, 0.38);
+        }
+
+        /* shine sweep on hover */
+        .certificate-card::before {
+            content: '';
+            position: absolute;
+            top: -80%;
+            left: -80%;
+            width: 260%;
+            height: 260%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, transparent 55%);
+            opacity: 0;
+            transition: opacity 0.35s;
+            pointer-events: none;
+        }
+
+        .certificate-card:hover::before {
+            opacity: 1;
+        }
+
+        /* ── ICON ── */
+        .cert-icon {
+            font-size: 3.2rem;
+            margin-bottom: 1rem;
+            z-index: 1;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
+        }
+
+        .certificate-card:hover .cert-icon {
+            transform: scale(1.2) rotate(-10deg);
+        }
+
+        /* ── CATEGORY PILL ── */
+        .cert-category {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.22);
+            color: #fff;
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.9rem;
+            z-index: 1;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── NAME ── */
+        .cert-name {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            line-height: 1.45;
+            z-index: 1;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+            flex: 1;
+            margin-bottom: 1.2rem;
+        }
+
+        /* ── VIEW BUTTON ── */
+        .cert-view-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.22);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.45);
+            padding: 9px 24px;
+            border-radius: 50px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+            z-index: 2;
+            position: relative;
+            margin-top: auto;
+        }
+
+        .cert-view-btn:hover {
+            background: rgba(255, 255, 255, 0.38);
+            transform: scale(1.07);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .cert-no-pdf {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.3);
+            font-style: italic;
+            margin-top: auto;
+        }
+
+        /* ── EMPTY ── */
+        .cert-empty {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 80px 0;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.9rem;
+            line-height: 2;
+        }
+
+        .cert-empty i {
+            display: block;
+            font-size: 2.5rem;
+            margin-bottom: 14px;
+            color: #a259ff;
+            opacity: 0.4;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:600px) {
+            .cert-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cert-header h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo" id="siteLogo">.</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="education.html">Education</a></li>
+                <li><a href="experience.html">Experience</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="certificates.html" class="active">Certificates</a></li>
+                <li><a href="resume.html">Resume</a></li>
+                <li><a href="contact.html" class="contact-btn">Contact</a></li>
+                <li><a href="login.html" class="admin-btn">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="cert-page">
+
+            <div class="cert-header">
+                <h2>📜 My <span>Certificates</span></h2>
+                <p>Professional certifications and achievements throughout my journey.</p>
+            </div>
+
+            <div class="cert-grid" id="certificatesGrid"></div>
+
+        </div>
+    </main>
+
+    <script>
+        const API = "https://portfolio-6z56.onrender.com";
+        window._certPdfs = {};
+
+        async function init() {
+            const certPromise = fetch(`${API}/api/certificates`);
+            // Load logo name
+            try {
+                const pr = await fetch(`${API}/api/profile`);
+                const profile = await pr.json();
+                const name = (profile && profile.name) ? profile.name.toUpperCase() : 'PORTFOLIO';
+                document.getElementById('siteLogo').textContent = name;
+                document.title = 'Certificates - ' + (profile.name || 'Portfolio');
+            } catch (e) { document.getElementById('siteLogo').textContent = 'PORTFOLIO'; }
+            document.getElementById('siteLogo').classList.add('ready');
+
+            const grid = document.getElementById("certificatesGrid");
+            try {
+                const res = await certPromise;
+                const certs = await res.json();
+
+                if (!certs || certs.length === 0) {
+                    grid.innerHTML = '<div class="cert-empty"><i class="fas fa-certificate"></i>No certificates found.<br>Add entries from the admin panel.</div>';
+                    return;
+                }
+
+                // Store PDF data in JS map — never in HTML attributes
+                certs.forEach((c, i) => { if (c.pdfUrl) window._certPdfs[i] = c.pdfUrl; });
+
+                // Render cards (start invisible — JS stagger reveals them)
+                grid.innerHTML = certs.map((c, idx) => `
+        <div class="certificate-card" id="cert-${idx}">
+          <div class="cert-icon">${c.icon || '🏆'}</div>
+          <span class="cert-category">${c.category || 'General'}</span>
+          <div class="cert-name">${c.title}</div>
+          ${c.pdfUrl
+                        ? `<button class="cert-view-btn" onclick="openPdf(event,${idx})">
+                 <i class="fas fa-file-pdf"></i> View Certificate
+               </button>`
+                        : `<span class="cert-no-pdf">No PDF uploaded</span>`
+                    }
+        </div>`).join('');
+
+                // Staggered reveal — each card appears 150ms after the previous
+                document.querySelectorAll('.certificate-card').forEach((card, i) => {
+                    setTimeout(() => card.classList.add('visible'), 100 + i * 150);
+                });
+
+            } catch (err) {
+                grid.innerHTML = '<div class="cert-empty"><i class="fas fa-triangle-exclamation"></i>Server not reachable.<br>Make sure the backend is running.</div>';
+            }
+        }
+
+        function openPdf(event, idx) {
+            event.stopPropagation();
+            const url = window._certPdfs[idx];
+            if (!url) return;
+            if (url.startsWith('data:application/pdf')) {
+                const b = atob(url.split(',')[1]);
+                const arr = new Uint8Array(b.length);
+                for (let i = 0; i < b.length; i++) arr[i] = b.charCodeAt(i);
+                window.open(URL.createObjectURL(new Blob([arr], { type: 'application/pdf' })), '_blank');
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

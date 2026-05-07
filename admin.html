@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Experience</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    /* ── NAVBAR FIX ── */
+    header {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      background: #23223a !important;
+      z-index: 9999 !important;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    main {
+      padding-top: 88px !important;
+    }
+
+    .logo {
+      visibility: hidden;
+    }
+
+    .logo.ready {
+      visibility: visible;
+    }
+
+    .content-section {
+      padding: 64px 24px 80px;
+    }
+
+    .content-section h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #a259ff;
+      margin: 0 0 10px 0;
+    }
+
+    .exp-tagline {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: rgba(220, 215, 245, 0.7);
+      margin: 0 0 36px 0;
+    }
+
+    .experience-list {
+      max-width: 780px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .exp-card {
+      background: #1e1d36;
+      border-radius: 14px;
+      padding: 22px 28px;
+      border-left: 4px solid #a259ff;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: expFadeUp 0.45s ease forwards;
+    }
+
+    .exp-card:nth-child(1) {
+      animation-delay: 0.05s
+    }
+
+    .exp-card:nth-child(2) {
+      animation-delay: 0.15s
+    }
+
+    .exp-card:nth-child(3) {
+      animation-delay: 0.25s
+    }
+
+    .exp-card:nth-child(4) {
+      animation-delay: 0.35s
+    }
+
+    @keyframes expFadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .exp-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .exp-company {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #a259ff;
+      margin-bottom: 4px;
+    }
+
+    .exp-duration {
+      font-size: 0.85rem;
+      color: rgba(220, 215, 245, 0.6);
+      margin-bottom: 10px;
+    }
+
+    .exp-desc {
+      font-size: 0.9rem;
+      color: rgba(220, 215, 245, 0.8);
+      line-height: 1.6;
+    }
+
+    .exp-empty {
+      text-align: center;
+      padding: 56px 24px;
+      opacity: 0.55;
+      font-size: 14px;
+      color: #ccc;
+      line-height: 1.8;
+    }
+
+    .exp-empty i {
+      font-size: 34px;
+      display: block;
+      margin-bottom: 14px;
+      color: #a259ff;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo" id="siteLogo">.</div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="education.html">Education</a></li>
+        <li><a href="experience.html" class="active">Experience</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="certificates.html">Certificates</a></li>
+        <li><a href="resume.html">Resume</a></li>
+        <li><a href="contact.html" class="contact-btn">Contact</a></li>
+        <li><a href="login.html" class="admin-btn">Admin</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section class="content-section">
+      <h2>Experience</h2>
+      <p class="exp-tagline">My professional journey and work experience.</p>
+      <div class="experience-list" id="experienceList"></div>
+    </section>
+  </main>
+  <script>
+    const API = "https://portfolio-6z56.onrender.com";
+    async function init() {
+      try {
+        const pr = await fetch(`${API}/api/profile`);
+        const profile = await pr.json();
+        const name = (profile && profile.name) ? profile.name.toUpperCase() : '';
+        document.getElementById('siteLogo').textContent = name;
+        document.title = 'Experience - ' + (profile.name || 'Portfolio');
+      } catch (e) { document.getElementById('siteLogo').textContent = ''; }
+      document.getElementById('siteLogo').classList.add('ready');
+
+      const container = document.getElementById("experienceList");
+      try {
+        const res = await fetch(`${API}/api/experience`);
+        const experience = await res.json();
+        if (!experience || experience.length === 0) {
+          container.innerHTML = `<div class="exp-empty"><i class="fa-solid fa-briefcase"></i>No experience records found.<br>Add entries from the admin panel.</div>`;
+          return;
+        }
+        container.innerHTML = experience.map(e => `
+          <div class="exp-card">
+            <div class="exp-title">${e.title}</div>
+            <div class="exp-company">${e.company}</div>
+            <div class="exp-duration"><i class="fas fa-clock" style="margin-right:6px"></i>${e.duration}</div>
+            <div class="exp-desc">${e.desc}</div>
+          </div>`).join("");
+      } catch (err) {
+        container.innerHTML = `<div class="exp-empty"><i class="fa-solid fa-triangle-exclamation"></i>Server not reachable.<br>Make sure the backend is running.</div>`;
+      }
+    }
+    init();
+  </script>
+</body>
+
+</html>

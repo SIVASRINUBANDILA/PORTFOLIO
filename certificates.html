@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Education</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<style>
+/* ── NAVBAR FIX — overrides style.css sticky ── */
+header{position:fixed!important;top:0!important;left:0!important;width:100%!important;background:#23223a!important;z-index:9999!important;box-shadow:0 2px 16px rgba(0,0,0,0.3)!important;}
+main{padding-top:88px!important;}
+.logo{visibility:hidden;}
+.logo.ready{visibility:visible;}
+
+*{box-sizing:border-box;}
+.edu-page{max-width:760px;margin:0 auto;padding:48px 24px 80px;}
+.edu-header{margin-bottom:48px;}
+.edu-header h1{font-family:'Montserrat',sans-serif;font-size:2.2rem;font-weight:700;color:#fff;margin-bottom:10px;}
+.edu-header h1 span{color:#a259ff;}
+.edu-header p{font-size:0.92rem;color:rgba(255,255,255,0.45);line-height:1.7;}
+.edu-list{display:flex;flex-direction:column;gap:16px;}
+.edu-card{background:#1e1d36;border:1px solid rgba(162,89,255,0.15);border-radius:14px;padding:28px 32px;display:flex;align-items:flex-start;gap:24px;opacity:0;transform:translateY(40px) scale(0.97);transition:opacity 0.55s cubic-bezier(0.22,1,0.36,1),transform 0.55s cubic-bezier(0.22,1,0.36,1),border-color 0.2s,box-shadow 0.2s;}
+.edu-card.visible{opacity:1;transform:translateY(0) scale(1);}
+.edu-card:hover{border-color:rgba(162,89,255,0.5);box-shadow:0 8px 40px rgba(162,89,255,0.1);}
+.edu-icon{width:48px;height:48px;border-radius:12px;background:rgba(162,89,255,0.12);border:1px solid rgba(162,89,255,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#a259ff;font-size:1.1rem;}
+.edu-content{flex:1;min-width:0;}
+.edu-year{font-size:0.72rem;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#a259ff;margin-bottom:6px;}
+.edu-place{font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.3;}
+.edu-title{font-size:0.88rem;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:16px;}
+.edu-grade{display:inline-flex;align-items:center;gap:7px;font-size:0.8rem;font-weight:600;color:#fff;background:rgba(162,89,255,0.1);border:1px solid rgba(162,89,255,0.22);border-radius:999px;padding:5px 14px;}
+.edu-grade i{color:#a259ff;font-size:0.75rem;}
+.edu-empty{text-align:center;padding:80px 0;color:rgba(255,255,255,0.3);font-size:0.9rem;line-height:2;}
+.edu-empty i{display:block;font-size:2.2rem;margin-bottom:14px;color:#a259ff;opacity:0.4;}
+@media(max-width:560px){.edu-card{flex-direction:column;gap:16px;padding:22px 20px}.edu-header h1{font-size:1.7rem}}
+</style>
+</head>
+<body>
+<header>
+  <nav class="navbar">
+    <div class="logo" id="siteLogo">.</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="education.html" class="active">Education</a></li>
+      <li><a href="experience.html">Experience</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="certificates.html">Certificates</a></li>
+      <li><a href="resume.html">Resume</a></li>
+      <li><a href="contact.html" class="contact-btn">Contact</a></li>
+      <li><a href="login.html" class="admin-btn">Admin</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+  <div class="edu-page">
+    <div class="edu-header">
+      <h1>My <span>Education</span></h1>
+      <p>Academic qualifications and achievements throughout my journey.</p>
+    </div>
+    <div class="edu-list" id="educationList"></div>
+  </div>
+</main>
+
+<script>
+const API = "https://portfolio-6z56.onrender.com";
+const ICONS = ['fa-graduation-cap','fa-university','fa-school','fa-book-open','fa-flask','fa-laptop-code'];
+
+async function init(){
+  // Load logo name from profile first — no flicker
+  try{
+    const pr = await fetch(`${API}/api/profile`);
+    const profile = await pr.json();
+    const name = (profile && profile.name) ? profile.name.toUpperCase() : '';
+    document.getElementById('siteLogo').textContent = name;
+    document.title = 'Education - ' + (profile.name || 'Portfolio');
+  }catch(e){
+    document.getElementById('siteLogo').textContent = '';
+  }
+  document.getElementById('siteLogo').classList.add('ready');
+
+  // Load education cards
+  const list = document.getElementById("educationList");
+  try{
+    const res = await fetch(`${API}/api/education`);
+    const edu = await res.json();
+    if(!edu || edu.length === 0){
+      list.innerHTML = '<div class="edu-empty"><i class="fas fa-graduation-cap"></i>No education records found.<br>Add entries from the admin panel.</div>';
+      return;
+    }
+    list.innerHTML = edu.map((e,i) => `
+      <div class="edu-card" id="ec${i}">
+        <div class="edu-icon"><i class="fas ${ICONS[i%ICONS.length]}"></i></div>
+        <div class="edu-content">
+          <div class="edu-year">${e.year||''}</div>
+          <div class="edu-place">${e.place||''}</div>
+          <div class="edu-title">${e.title||''}</div>
+          <div class="edu-grade"><i class="fas fa-star"></i>${e.grade||''}</div>
+        </div>
+      </div>`).join('');
+    document.querySelectorAll('.edu-card').forEach((c,i)=>setTimeout(()=>c.classList.add('visible'),180+i*220));
+  }catch(err){
+    list.innerHTML = '<div class="edu-empty"><i class="fas fa-triangle-exclamation"></i>Server not reachable.<br>Make sure the backend is running.</div>';
+  }
+}
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Portfolio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:700,400&display=swap" rel="stylesheet">
+  <style>
+    /* Hide dynamic elements until API data loads — prevents flicker */
+    .hero-left,
+    .hero-right {
+      visibility: hidden;
+    }
+
+    .hero-left.ready,
+    .hero-right.ready {
+      visibility: visible;
+    }
+
+    /* Dynamic section cards */
+    .dyn-section {
+      padding: 48px 24px 64px;
+    }
+
+    .dyn-section h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #f5a623;
+      margin: 0 0 28px 0;
+    }
+
+    .edu-card-mini {
+      background: #1e2a6e;
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 14px;
+    }
+
+    .edu-card-mini .year {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #f5a623;
+      margin-bottom: 4px;
+    }
+
+    .edu-card-mini .place {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+
+    .edu-card-mini .title {
+      font-size: 0.88rem;
+      color: rgba(220, 215, 245, 0.75);
+      margin-bottom: 4px;
+    }
+
+    .edu-card-mini .grade {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #f5a623;
+    }
+
+    .proj-card-mini {
+      background: #1e1d36;
+      border-left: 4px solid #a259ff;
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 14px;
+    }
+
+    .proj-card-mini .ptitle {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .proj-card-mini .ptech {
+      display: inline-block;
+      background: rgba(162, 89, 255, 0.18);
+      color: #a259ff;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .proj-card-mini .pdesc {
+      font-size: 0.87rem;
+      color: rgba(220, 215, 245, 0.75);
+      line-height: 1.55;
+    }
+
+    .proj-card-mini .plink {
+      margin-top: 8px;
+    }
+
+    .proj-card-mini .plink a {
+      color: #2979ff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .see-more {
+      display: inline-block;
+      margin-top: 8px;
+      color: #a259ff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+    }
+
+    .see-more:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo" id="navLogo">&#8203;</div>
+      <ul class="nav-links">
+        <li><a href="#home" class="active">Home</a></li>
+        <li><a href="education.html">Education</a></li>
+        <li><a href="experience.html">Experience</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="certificates.html">Certificates</a></li>
+        <li><a href="resume.html">Resume</a></li>
+        <li><a href="contact.html" class="contact-btn">Contact</a></li>
+        <li><a href="login.html" class="admin-btn" target="_blank">Admin</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-left">
+        <img id="heroPhoto" src="#" alt="Profile" class="profile-img">
+      </div>
+      <div class="hero-right">
+        <h2 class="greeting">Hi, I am <span id="heroName"></span></h2>
+        <h1 class="main-title">Passionate in</h1>
+        <h1 class="main-title"><span class="highlight" id="typed-text"></span></h1>
+        <div id="heroBio"
+          style="display:none;font-size:0.98rem;color:rgba(255,255,255,0.7);line-height:1.7;margin:12px 0 4px;max-width:480px">
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;margin:10px 0 4px">
+          <span id="heroLocation" style="display:none;font-size:0.88rem;color:#ffb347"><i class="fas fa-map-marker-alt"
+              style="margin-right:5px"></i><span id="heroLocationText"></span></span>
+          <span id="heroExp" style="display:none;font-size:0.88rem;color:#a259ff"><i class="fas fa-briefcase"
+              style="margin-right:5px"></i><span id="heroExpText"></span></span>
+          <span id="heroEmail" style="display:none;font-size:0.88rem;color:#4caf50"><i class="fas fa-envelope"
+              style="margin-right:5px"></i><a id="heroEmailLink" href="#"
+              style="color:inherit;text-decoration:none"></a></span>
+        </div>
+        <a href="contact.html" class="contact-me-btn">Contact Me</a>
+        <div class="social-row">
+          <a id="linkInstagram" href="#" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+          <a id="linkLinkedin" href="#" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a id="linkWhatsapp" href="#" target="_blank" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          <a id="linkGithub" href="#" target="_blank" title="GitHub" style="display:none"><i
+              class="fab fa-github"></i></a>
+          <span class="arrow-icon"><i class="fas fa-arrow-right"></i></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="dyn-section" id="educationSection">
+      <h2>🎓 Education</h2>
+      <div id="eduList">
+        <p style="color:#aaa;font-size:0.9rem">Loading...</p>
+      </div>
+      <a href="education.html" class="see-more">View full education →</a>
+    </section>
+
+    <section class="dyn-section" id="projectsSection" style="background:rgba(30,29,54,0.6)">
+      <h2 style="color:#a259ff">🚀 Projects</h2>
+      <div id="projList">
+        <p style="color:#aaa;font-size:0.9rem">Loading...</p>
+      </div>
+      <a href="projects.html" class="see-more">View all projects →</a>
+    </section>
+
+    <section class="content-section">
+      <h2>Resume</h2>
+      <a id="resumeLink" href="#" target="_blank" class="resume-link">Download Resume</a>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <span>© 2026 <span id="footerName"></span>. All Rights Reserved.</span>
+      <div class="footer-social">
+        <a id="footerEmail" href="#"><i class="fas fa-envelope"></i></a>
+        <a id="footerGithub" href="#" target="_blank"><i class="fab fa-github"></i></a>
+        <a id="footerLinkedin" href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+        <a id="footerInsta" href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a id="footerWa" href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const API = "https://portfolio-6z56.onrender.com";
+
+    /* Typing animation — starts only after name is loaded */
+    function startTyping(text) {
+      const el = document.getElementById('typed-text');
+      let i = 0;
+      function type() {
+        if (i < text.length) { el.textContent += text[i++]; setTimeout(type, 120); }
+      }
+      type();
+    }
+
+    async function loadPortfolio() {
+      try {
+        const res = await fetch(`${API}/api/portfolio/home`);
+        const data = await res.json();
+        const p = data.profile || {};
+
+        /* ── Name — set BEFORE making hero visible ── */
+        const name = p.name;
+        document.getElementById('navLogo').textContent = name.toUpperCase();
+        document.getElementById('heroName').textContent = name;
+        document.getElementById('footerName').textContent = name;
+        document.title = name + ' Portfolio';
+
+        /* ── Photo ── */
+        const photo = p.photo || 'https://mobile.technicalhub.io:5010/student/24B11DS072.png';
+        document.getElementById('heroPhoto').src = photo;
+
+        /* ── Bio, location, exp, email ── */
+        // bio hidden intentionally
+        const profileLocation = p['location'];  // avoid window.location collision
+        if (profileLocation) { document.getElementById('heroLocationText').textContent = profileLocation;
+         document.getElementById('heroLocation').style.display = 'inline-flex'; }
+        // exp hidden intentionally
+        // email in hero hidden intentionally
+
+        /* ── Social links ── */
+        if (p.linkedin) {
+          document.getElementById('linkLinkedin').href = p.linkedin;
+          document.getElementById('footerLinkedin').href = p.linkedin;
+        }
+        if (p.github) {
+          const gh = document.getElementById('linkGithub');
+          gh.href = p.github; gh.style.display = '';
+          document.getElementById('footerGithub').href = p.github;
+        }
+        if (p.twitter) document.getElementById('linkInstagram').href = p.twitter;
+        if (p.email) document.getElementById('footerEmail').href = 'mailto:' + p.email;
+        if (p.phone) {
+          const wa = 'https://wa.me/' + p.phone.replace(/\D/g, '');
+          document.getElementById('linkWhatsapp').href = wa;
+          document.getElementById('footerWa').href = wa;
+        }
+        if (p.resume) document.getElementById('resumeLink').href = p.resume;
+
+        /* ── Now reveal hero (no flicker — data is ready) ── */
+        document.querySelector('.hero-left').classList.add('ready');
+        document.querySelector('.hero-right').classList.add('ready');
+
+        /* ── Start typing with profile title ── */
+        startTyping(p.title || 'Data Science & Fullstack Developing');
+
+        /* ── Education (top 3) ── */
+        const edu = (data.education || []).slice(0, 3);
+        document.getElementById('eduList').innerHTML = edu.length === 0
+          ? '<p style="color:#aaa;font-size:0.9rem">No education records yet.</p>'
+          : edu.map(e => `
+          <div class="edu-card-mini">
+            <div class="year">${e.year || ''}</div>
+            <div class="place">${e.place || ''}</div>
+            <div class="title">${e.title || ''}</div>
+            <div class="grade">${e.grade || ''}</div>
+          </div>`).join('');
+
+        /* ── Projects (top 3) ── */
+        const proj = (data.projects || []).slice(0, 3);
+        document.getElementById('projList').innerHTML = proj.length === 0
+          ? '<p style="color:#aaa;font-size:0.9rem">No projects yet.</p>'
+          : proj.map(p => `
+          <div class="proj-card-mini">
+            <div class="ptitle">${p.title || ''}</div>
+            <span class="ptech">${p.tech || ''}</span>
+            <div class="pdesc">${p.desc || ''}</div>
+            ${p.link && p.link !== '#' ? `<div class="plink"><a href="${p.link}" target="_blank"><i class="fas fa-external-link-alt"></i> View Project</a></div>` : ''}
+          </div>`).join('');
+
+      } catch (err) {
+        /* Fallback — show defaults if API fails */
+        const fallback = '';
+        document.getElementById('navLogo').textContent = fallback.toUpperCase();
+        document.getElementById('heroName').textContent = fallback;
+        document.getElementById('footerName').textContent = fallback;
+        document.getElementById('heroPhoto').src = '';
+        document.querySelector('.hero-left').classList.add('ready');
+        document.querySelector('.hero-right').classList.add('ready');
+        startTyping('Data Science & Fullstack Developing');
+        document.getElementById('eduList').innerHTML = '<p style="color:#aaa;font-size:0.9rem">Could not load — make sure backend is running.</p>';
+        document.getElementById('projList').innerHTML = '<p style="color:#aaa;font-size:0.9rem">Could not load — make sure backend is running.</p>';
+      }
+    }
+
+    loadPortfolio();
+  </script>
+</body>
+
+</html>
